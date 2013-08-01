@@ -55,10 +55,10 @@ namespace TankGame
                             data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
                             
                             //Console.WriteLine("Received: {0}", data);
-                            /*using (StreamWriter writer = new StreamWriter("debug.txt", true))
+                            using (StreamWriter writer = new StreamWriter("debug.txt", true))
                             {
                                 writer.WriteLine(data);
-                            }*/
+                            }
                             ThreadPool.QueueUserWorkItem(new WaitCallback(engine.analyze), (Object)data);
                         }                                               
                         
@@ -82,11 +82,12 @@ namespace TankGame
         }
 
 
-        public void SendData(String data)
+        public bool SendData(String data)
         {
-
+            bool fail;
             try
             {
+                fail = false;
                 this.client = new TcpClient();
                 this.client.Connect("127.0.0.1", 6000);
                 NetworkStream stm = client.GetStream();
@@ -99,11 +100,13 @@ namespace TankGame
             catch (Exception e)
             {
                 Console.WriteLine("Error..... " + e.StackTrace);
+                fail = true;
             }
             finally
             {
                 this.client.Close();
             }
+            return !fail;
         }
     }
     }
